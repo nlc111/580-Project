@@ -21,20 +21,25 @@ Reads day_*.csv files and solution_0 to calculate schedule metrics
 const DATA_DIR = "/content/sample_data/DATA_DIR"  # Change this to your data directory
 const BRIEFING_HOURS = 1.0  # Hours per duty for briefing/debriefing
 
-"""
-Parse time string in format HH:MM to hours as Float64
-"""
 function parse_time_to_hours(time_str::String)
+
+    """
+    Parse time string in format HH:MM to hours as Float64
+
+    Converts a clock time string into fractional hours for numeric calculations.
+    Assumes valid HH:MM input and deliberately avoids DateTime objects to keep the downstream arithmetic lightweight and predictable.
+    """
     h, m = split(time_str, ':')
     return parse(Int, h) + parse(Int, m) / 60.0
 end
 
-"""
-Calculate flight duration in hours between departure and arrival
-Handles flights that cross midnight
-"""
+
 function calculate_flight_time(date_dep::String, hour_dep::String,
                                date_arr::String, hour_arr::String)
+    """
+    Calculate flight duration in hours between departure and arrival
+    Handles flights that cross midnight
+    """
     dep_date = Date(date_dep, "yyyy-mm-dd")
     arr_date = Date(date_arr, "yyyy-mm-dd")
 
@@ -48,11 +53,12 @@ function calculate_flight_time(date_dep::String, hour_dep::String,
     return duration
 end
 
-"""
-Load all day_*.csv files into a dictionary
-Returns: Dict{String, Float64} mapping leg_nb to flight_time_hours
-"""
+
 function load_flight_data(data_dir::String, num_days::Int=31)
+    """
+    Load all day_*.csv files into a dictionary
+    Returns: Dict{String, Float64} mapping leg_nb to flight_time_hours
+    """
     println("Loading flight data from day files...")
     flight_dict = Dict{String, Float64}()
 
@@ -89,10 +95,11 @@ function load_flight_data(data_dir::String, num_days::Int=31)
     return flight_dict
 end
 
-"""
-Extract day number from leg name (e.g., "LEG_07_23" -> 7)
-"""
+
 function extract_day_from_leg(leg_name::String)
+    """
+    Extract day number from leg name (e.g., "LEG_07_23" -> 7)
+    """
     # Handle both LEG and PAL_LEG prefixes
     leg_clean = startswith(leg_name, "PAL_") ? leg_name[5:end] : leg_name
 
@@ -103,10 +110,11 @@ function extract_day_from_leg(leg_name::String)
     return -1
 end
 
-"""
-Determine if a task is a flight leg (not vacation, deadhead, etc.)
-"""
+
 function is_flight_leg(task::String)
+    """
+    Determine if a task is a flight leg (not vacation, deadhead, etc.)
+    """
     task = strip(task)
 
     # Exclude non-flight tasks
@@ -121,11 +129,12 @@ function is_flight_leg(task::String)
     return startswith(task, "LEG_") || startswith(task, "PAL_LEG_")
 end
 
-"""
-Parse a single schedule line from solution_0
-Returns: (schedule_num, employee, base, tasks)
-"""
+
 function parse_schedule_line(line::String)
+    """
+    Parse a single schedule line from solution_0
+    Returns: (schedule_num, employee, base, tasks)
+    """
     # Format: schedule 1 EMP007 (BASE3) : TASK--->TASK--->...;
 
     # Extract schedule number
@@ -153,11 +162,12 @@ function parse_schedule_line(line::String)
     return (schedule_num, employee, base, String.(tasks))
 end
 
-"""
-Calculate metrics for a single schedule
-Returns: Dict with flight_time, duties, briefing_credit, net_credits
-"""
+
 function analyze_schedule(tasks::Vector{String}, flight_dict::Dict{String, Float64})
+    """
+    Calculate metrics for a single schedule
+    Returns: Dict with flight_time, duties, briefing_credit, net_credits
+    """
     total_flight_time = 0.0
     flying_days = Set{Int}()
     leg_count = 0
@@ -201,10 +211,11 @@ function analyze_schedule(tasks::Vector{String}, flight_dict::Dict{String, Float
     )
 end
 
-"""
-Parse solution_0 file and calculate metrics for all schedules
-"""
+
 function process_solution(solution_file::String, flight_dict::Dict{String, Float64})
+    """
+    Parse solution_0 file and calculate metrics for all schedules
+    """
     println("Processing solution file: $solution_file")
 
     if !isfile(solution_file)
