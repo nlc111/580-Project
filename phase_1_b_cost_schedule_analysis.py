@@ -18,11 +18,10 @@ from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 import os
 
 """
-Phase 2: Cost Analysis and Credit Modeling (Python Version)
+Phase 2: Cost Analysis and Credit Modeling 
 Analyzes the relationship between schedule characteristics and costs
 Uses statistical methods to understand cost drivers and credit calculations
 
-This is MUCH faster than the Julia version and runs in seconds!
 """
 
 # ============================================================================
@@ -46,7 +45,7 @@ plt.rcParams['figure.figsize'] = (10, 6)
 def load_and_prepare_data(filename):
     """
     Load the Phase 1 results and prepare data for analysis
-    Removes any rows with missing cost data since we need that for modeling
+    Removes any rows with missing cost data 
     """
     print("=" * 70)
     print("LOADING DATA FROM PHASE 1")
@@ -62,7 +61,7 @@ def load_and_prepare_data(filename):
     removed = initial_rows - len(df)
 
     if removed > 0:
-        print(f"⚠ Removed {removed} schedules with missing cost data")
+        print(f" Removed {removed} schedules with missing cost data")
     print(f"✓ Working with {len(df)} schedules with complete data\n")
 
     # Create derived features that might be useful for analysis
@@ -186,7 +185,7 @@ def calculate_correlations(df):
     # Save full correlation matrix
     output_file = os.path.join(OUTPUT_DIR, "correlation_matrix.csv")
     cor_matrix.to_csv(output_file)
-    print(f"\n✓ Saved correlation matrix to: {output_file}\n")
+    print(f"\n Saved correlation matrix to: {output_file}\n")
 
     return cor_matrix
 
@@ -198,7 +197,6 @@ def plot_cost_vs_credits(df):
     """
     Create scatter plot: Cost vs. Actual Credits
     Shows if there's a linear relationship between credits and cost
-    Color-coded by base to see if bases have different patterns
     """
     print("Creating plot: Cost vs. Actual Credits...")
 
@@ -351,8 +349,8 @@ def build_model(df, features, target='actual_cost', model_name="Model"):
 
 def build_model_1(df):
     """
-    Model 1: Simple Linear Regression - Cost predicted by Credits only
-    This is the simplest model: Cost = β₀ + β₁ × actual_credits
+    Model 1: Simple Linear Regression - Cost predicted by Credits 
+     Cost = beta_0 + beta_1 × actual_credits
 
     Tests hypothesis: Cost is primarily driven by credited hours
     """
@@ -367,7 +365,7 @@ def build_model_1(df):
 
     print(f"\nModel Performance:")
     print(f"  R² (variance explained):     {metrics['r2']:.4f}")
-    print(f"  Adjusted R²:                 {metrics['adj_r2']:.4f}")
+    print(f"  Adjusted R^2:                 {metrics['adj_r2']:.4f}")
     print(f"  RMSE (prediction error):     ${metrics['rmse']:.2f}")
     print(f"  Mean Absolute Error:         ${metrics['mae']:.2f}")
 
