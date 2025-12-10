@@ -26,6 +26,12 @@ import csv
 from collections import OrderedDict
 
 def parse_line(line):
+    """
+    Parses a single line from the initial solution file into its core components: pairing ID, base, and ordered leg list.
+    Designed to be tolerant of minor formatting inconsistencies (extra whitespace, missing semicolons, stray characters). 
+    If the line cannot be confidently parsed, it is flagged rather than failing hard so downstream parsing can continue. 
+    Also collects per-line warnings for suspicious or truncated tokens.
+    """
     # Example expected line:
     # Pairing 161 : Base BASE2 : LEG_05_2 , LEG_05_1 , LEG_05_27 , LEG_05_0;
     line = line.strip()
@@ -71,6 +77,18 @@ def parse_line(line):
     return ('OK', pairing_id, base, legs, warnings)
 
 def main(path):
+
+    """
+    Entry point for parsing the full initial solution file and materializing multiple CSV views of the same data.
+    Reads and validates pairings, assigns stable zero-based indices to both pairings and legs, and emits:
+
+    - pairing-level table,
+    - unique leg index table,
+    - sparse incidence mapping (leg ↔ pairing),
+    - fully expanded pairing–leg table.
+
+    Warnings are aggregated across the entire file and written separately so imperfect input does not silently corrupt the outputs.
+    """
     pairings = []  # list of (pairing_id, base, legs)
     warnings = []
     with open(path, 'r', encoding='utf-8') as f:
